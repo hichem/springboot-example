@@ -1,7 +1,7 @@
 # SpringBoot Example
 Simple microservices spring boot application.
 
-## Docker Configuration in pom.xml
+### Docker Configuration in pom.xml
 - Provide the docker hub repository or other repository using the docker image prefix parameter
 
 ```
@@ -15,7 +15,7 @@ Simple microservices spring boot application.
 ```
 
 
-## Build Docker Image
+### Build Docker Image
 - First build the jar of spring boot application
 
 ```
@@ -25,4 +25,10 @@ Simple microservices spring boot application.
 
 ```
 ./mvnw dockerfile:build
+```
+
+### Run Docker Image
+
+```
+docker run -p 9090:9090 -t mycompany/myapp:version
 ```
