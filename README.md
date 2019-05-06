@@ -2,6 +2,10 @@
 Simple microservices spring boot application.
 
 ### Docker Configuration in pom.xml
+
+Docker SpringBoot plugin documentation is located at the following URL:
+https://spring.io/guides/gs/spring-boot-docker
+
 - Provide the docker hub repository or other repository using the docker image prefix parameter
 
 ```
