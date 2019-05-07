@@ -1,9 +1,11 @@
-package com.example.user;
+package com.example.springbootexample.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
+@EntityScan(basePackages = { "com.example.springbootexample" })
 public class UserApplication {
 
 	public static void main(String[] args) {

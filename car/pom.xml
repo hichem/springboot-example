@@ -9,10 +9,10 @@
 		<version>2.1.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>carapp</artifactId>
+	<groupId>com.example.springbootexample</groupId>
+	<artifactId>car</artifactId>
 	<version>0.1</version>
-	<name>carapp</name>
+	<name>car</name>
 	<description>Car App Example with Spring Boot</description>
 
 	<properties>
@@ -43,6 +43,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Internal Dependencies -->
+		<dependency>
+			<groupId>com.example.springbootexample</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -64,6 +71,10 @@
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
 				</configuration>
+
+				<!-- Automate image creation and publishing -->
+				<!-- <executions> <execution> <id>default</id> <phase>install</phase> 
+					<goals> <goal>build</goal> <goal>push</goal> </goals> </execution> </executions> -->
 			</plugin>
 		</plugins>
 	</build>

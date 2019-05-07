@@ -1,4 +1,4 @@
-package com.example.carapp.web.controller;
+package com.example.springbootexample.common;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

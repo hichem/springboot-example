@@ -1,7 +1,9 @@
-package com.example.carapp.web.controller;
+package com.example.springbootexample.carapp.web.controller;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.example.springbootexample.common.Car;
 
 
 @Repository

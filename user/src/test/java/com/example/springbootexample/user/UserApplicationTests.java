@@ -1,4 +1,4 @@
-package com.example.insurance;
+package com.example.springbootexample.user;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class InsuranceApplicationTests {
+public class UserApplicationTests {
 
 	@Test
 	public void contextLoads() {
