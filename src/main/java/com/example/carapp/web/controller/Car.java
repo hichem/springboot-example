@@ -1,4 +1,4 @@
-package com.example.kamereonapp.web.controller;
+package com.example.carapp.web.controller;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

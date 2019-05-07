@@ -1,4 +1,4 @@
-package com.example.kamereonapp.web.controller;
+package com.example.carapp.web.controller;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
