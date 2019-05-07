@@ -36,3 +36,9 @@ https://spring.io/guides/gs/spring-boot-docker
 ```
 docker run -p 9090:9090 -t mycompany/myapp:version
 ```
+
+### Push Docker Image
+
+```
+docker push mycompany/myapp:version
+```
