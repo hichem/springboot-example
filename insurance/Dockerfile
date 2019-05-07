@@ -7,6 +7,8 @@ LABEL maintainer = "boussettahichem@yahoo.fr"
 #Add a volume pointing to /tmp
 VOLUME /tmp
 
+ENV SPRING_APPLICATION_JSON ""
+
 # Expose application port
 EXPOSE 8080
 

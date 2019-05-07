@@ -22,10 +22,10 @@ public class ReportController {
 
 
 	//External micro-services dependencies
-	@Value("${com.example.user.users.url}")
+	@Value("${user.users.url}")
 	private String usersUrl;
 
-	@Value("${com.example.car.cars.url}")
+	@Value("${car.cars.url}")
 	private String carsUrl;
 
 
