@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-user
+spec:
+  selector:
+    matchLabels:
+      app: app-user
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: app-user
+    spec:
+      containers:
+        - image: boussettahichem/myrepo:user0.1
+          imagePullPolicy: Never							# Set to Always to force pulling the image at each deployment
+          name: app-user
+          ports:
+            - containerPort: 7070

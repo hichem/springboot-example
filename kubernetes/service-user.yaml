@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-user-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 7070
+    protocol: TCP
+    targetPort: 7070
+  selector:
+    app: app-user
+

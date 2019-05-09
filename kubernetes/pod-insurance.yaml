@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-insurance
+  labels:
+    app: app-inurance
+spec:
+  containers:
+    - image: boussettahichem/myrepo:insurance0.1
+      name: app-insurance
+      ports:
+        - containerPort: 8080
+

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-car
+spec:
+  selector:
+    matchLabels:
+      app: app-car
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: app-car
+    spec:
+      containers:
+        - image: boussettahichem/myrepo:car0.1
+          imagePullPolicy: Never							# Set to Always to force pulling the image at each deployment
+          name: app-car
+          ports:
+          - containerPort: 9090
