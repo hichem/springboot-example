@@ -1,6 +1,70 @@
 # SpringBootExample Project
 Simple Micro-Services project based on SpringBoot and Docker
 
+## SpringBoot Apps REST API
+### Car App
+Endpoint: http://$HOSTNAME/cars
+
+- GET Cars
+```
+curl http://localhost:9090/cars
+```
+- GET Car by ID
+```
+curl http://localhost:9090/cars/1
+```
+- ADD Car
+```
+curl -X POST -H "Content-Type: application/json" -d '{"id":4,"model":"model4","serialNumber":"SN_4"}' http://localhost:9090/cars
+```
+- DEL Car by ID
+```
+curl -X DELETE http://localhost:9090/cars/4
+```
+### User App
+Endpoint: http://$HOSTNAME/users
+
+- GET Users
+```
+curl http://localhost:7070/users
+```
+- GET User by ID
+```
+curl http://localhost:7070/users/1
+```
+- ADD User
+```
+curl -X POST -H "Content-Type: application/json" -d '{"id":4,"firstname":"firstname4","lastname":"lastname4"}' http://localhost:7070/users
+```
+- DEL User by ID
+```
+curl -X DELETE http://localhost:7070/users/4
+```
+### Insurance App
+Endpoint: http://$HOSTNAME/contracts
+
+- GET Contracts
+```
+curl http://localhost:8080/contracts
+```
+- GET Contract by ID
+```
+curl http://localhost:8080/contracts/1
+```
+- ADD Contract
+```
+curl -X POST -H "Content-Type: application/json" -d '{"id":4,"userId":4,"carId":4}' http://localhost:8080/contracts
+```
+- DEL Contract by ID
+```
+curl -X DELETE http://localhost:8080/contracts/4
+```
+- GET Report for contract by ID (this api requires the insurance app to collect data from car and user apps)
+```
+curl http://localhost:8080/reports/1
+```
+
+
 ### Docker Configuration in pom.xml
 
 Docker SpringBoot plugin documentation is located at the following URL:
