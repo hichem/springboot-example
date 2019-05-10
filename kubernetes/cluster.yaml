@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-user-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 7070
+    protocol: TCP
+    targetPort: 7070
+  selector:
+    app: app-user
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-user
+  labels:
+    app: app-user		# label of the pod
+spec:
+  containers:
+    - image: boussettahichem/myrepo:user0.1
+      name: app-user
+      ports:
+        - containerPort: 7070
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-car-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: app-car
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-car
+  labels:
+    app: app-car
+spec:
+  containers:
+    - image: boussettahichem/myrepo:car0.1
+      name: app-car
+      ports:
+        - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-insurance-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: app-insurance
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-insurance
+  labels:
+    app: app-insurance
+spec:
+  containers:
+    - image: boussettahichem/myrepo:insurance0.1
+      name: app-insurance
+      env:
+        - name: SPRING_APPLICATION_JSON
+          value: '{"user" : {"users" : {"url" : "http://app-user-lb:7070/users"}}, "car" : {"cars" : {"url" : "http://app-car-lb:9090/cars"}}}'
+      ports:
+        - containerPort: 8080

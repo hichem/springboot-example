@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: app-insurance
   labels:
-    app: app-inurance
+    app: app-insurance
 spec:
   containers:
     - image: boussettahichem/myrepo:insurance0.1

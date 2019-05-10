@@ -7,7 +7,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
  
-    <name>SpringBoot Microservices Example</name>
+    <name>SpringBoot Example</name>
     <url>https://github.com/hichem/springboot-example</url>
  
     <properties>

@@ -307,7 +307,7 @@ On minikube which is a local kubernetes installation, the service will hang on t
 - Display the URL of the service
 
 ```
-kubectl service list
+minikube service list
 ```
 
 This will return
@@ -500,3 +500,122 @@ spec:
 ```
 
 - Each service with the cluster can be resolved by its name as kube-dns creates a dns entry for each created service. Containers can communicate with a service using its dns entry.
+
+## Manage Kubernetes Namespaces
+Kubernetes namespace are useful to create separate virtual environments/clusters on kubernetes physical cluster.
+A typical application would be to create development, staging, preproductiona and production environments.
+
+### Create Namespace
+- Create a YAML namespace-dev.yaml manifest for the namespace. We will call the namespace "development" and give it the same label.
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: development
+  labels:
+    name: development
+```
+
+- Create the development namespace using the following command
+
+```
+kubectl create -f namespace-dev.yaml
+```
+
+- Display namespaces and their labels
+
+```
+kubectl get namespaces --show-labels
+```
+
+### Create Kubernetes Contexts to manage Namespaces
+
+- Display current context configuration
+
+```
+kubectl config view
+```
+
+will return the following since we are using minikube
+
+```
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /Users/ay51547-dev/.minikube/ca.crt
+    server: https://192.168.99.100:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /Users/ay51547-dev/.minikube/client.crt
+    client-key: /Users/ay51547-dev/.minikube/client.key
+```
+
+- Get current context config
+
+```
+kubectl config current-context
+```
+
+will return
+
+```
+minikube
+```
+
+- Create dev and prod contexts
+
+```
+kubectl config set-context dev --namespace=development --cluster=minikube --user=minikube
+kubectl config set-context prod --namespace=production --cluster=minikube --user=minikube
+```
+
+- Use dev context
+
+```
+kubectl config use-context dev
+```
+
+### Create Cluster in Namespace
+- Create a cluster in development namespace using the manifest cluster.yaml. This will create 3 pods (app-user, app-car, app-insurance) and 3 services (app-user-lb, app-car-lb, app-insurance-lb)
+
+```
+kubectl --namespace=development create -f cluster.yaml
+```
+
+- Activate the 3 services
+
+```
+minikube -n development service app-user-lb
+minikube -n development service app-car-lb
+minikube -n development service app-insurance-lb
+```
+
+- Display the running services
+
+```
+minikube --namespace=development service list
+```
+
+will return
+
+```
+|-------------|------------------|-----------------------------|
+|  NAMESPACE  |       NAME       |             URL             |
+|-------------|------------------|-----------------------------|
+| development | app-car-lb       | http://192.168.99.100:32096 |
+| development | app-insurance-lb | http://192.168.99.100:32277 |
+| development | app-user-lb      | http://192.168.99.100:30358 |
+|-------------|------------------|-----------------------------|
+```
+
