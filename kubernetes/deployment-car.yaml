@@ -23,4 +23,4 @@ spec:
           imagePullPolicy: Never							# Set to Always to force pulling the image at each deployment
           name: app-car
           ports:
-          - containerPort: 9090
+          - containerPort: 7001

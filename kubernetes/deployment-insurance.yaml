@@ -26,5 +26,5 @@ spec:
             - name: SPRING_APPLICATION_JSON
               value: '{"user" : {"users" : {"url" : "http://app-user-lb:7070/users"}}, "car" : {"cars" : {"url" : "http://app-car-lb:9090/cars"}}}'
           ports:
-            - containerPort: 8080
+            - containerPort: 7002
 

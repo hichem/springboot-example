@@ -11,6 +11,7 @@ spec:
     targetPort: 7000
   selector:
     app: app-user
+
 ---
 apiVersion: v1
 kind: Pod
@@ -20,13 +21,14 @@ metadata:
     app: app-user		# label of the pod
 spec:
   containers:
-    - image: boussettahichem/myrepo:user0.1
+    - image: kamereoncontainerregistry.azurecr.io/user:v0.1
       name: app-user
       env:
         - name: SPRING_APPLICATION_JSON
           value: '{"server" : {"port" : 7000}}'
       ports:
         - containerPort: 7000
+
 ---
 apiVersion: v1
 kind: Service
@@ -50,13 +52,14 @@ metadata:
     app: app-car
 spec:
   containers:
-    - image: boussettahichem/myrepo:car0.1
+    - image: kamereoncontainerregistry.azurecr.io/car:v0.1
       name: app-car
       env:
         - name: SPRING_APPLICATION_JSON
           value: '{"server" : {"port" : 7001}}'
       ports:
         - containerPort: 7001
+      
 ---
 apiVersion: v1
 kind: Service
@@ -80,10 +83,13 @@ metadata:
     app: app-insurance
 spec:
   containers:
-    - image: boussettahichem/myrepo:insurance0.1
+    - image: kamereoncontainerregistry.azurecr.io/insurance:v0.1
       name: app-insurance
       env:
         - name: SPRING_APPLICATION_JSON
           value: '{"server" : {"port" : 7002}, "user" : {"users" : {"url" : "http://app-user-lb:7000/users"}}, "car" : {"cars" : {"url" : "http://app-car-lb:7001/cars"}}}'
       ports:
         - containerPort: 7002
+
+
+ 

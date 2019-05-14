@@ -5,9 +5,9 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 8080
+  - port: 7002
     protocol: TCP
-    targetPort: 8080
+    targetPort: 7002
   selector:
     app: app-insurance
 

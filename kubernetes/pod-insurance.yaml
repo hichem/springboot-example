@@ -9,5 +9,5 @@ spec:
     - image: boussettahichem/myrepo:insurance0.1
       name: app-insurance
       ports:
-        - containerPort: 8080
+        - containerPort: 7002
 

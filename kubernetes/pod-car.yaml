@@ -9,5 +9,5 @@ spec:
     - image: boussettahichem/myrepo:car0.1
       name: app-car
       ports:
-        - containerPort: 9090
+        - containerPort: 7001
 

@@ -9,5 +9,5 @@ spec:
     - image: boussettahichem/myrepo:user0.1
       name: app-user
       ports:
-        - containerPort: 7070
+        - containerPort: 7000
 
