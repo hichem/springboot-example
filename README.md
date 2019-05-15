@@ -180,11 +180,76 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' CON
 ```
 
 ## Kubernetes
+
 This section covers the following:
+- Install Kubernetes cluster locally (minikube)
 - Create / Delete Pod
 - Create / Delete Service
 - Create deployment & Service manually
 - Create deployment using YAML file
+- Install an Azure Kubernetes Service
+
+### Install Minikube
+
+- Download minikube binary from the following location (Mac version, install other versions depending on your environment):
+https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
+
+- Grant execution permission on minikube executable
+
+```
+chmod a+x minikube-darwin-amd64
+```
+
+- Create a symlink to minikube binary so it is added to system path
+
+```
+ln -s /usr/local/bin/minikube minikube-darwin-amd64
+```
+
+- Start minikube
+
+```
+minikube start
+```
+
+- Check minikube status
+
+```
+minikube status
+```
+
+returns
+
+```
+host: Running
+kubelet: Running
+apiserver: Running
+kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.101
+```
+
+- Start minikube dashboard
+
+```
+minikube dashboard
+```
+
+- Stop minikube using the following command 
+
+```
+minikube stop
+```
+
+- To delete all resources of minikube cluster (purge the cluster), run the following command
+
+```
+minikube delete
+```
+
+### Install Kubectl
+
+Download & Install kubectl following this link
+https://kubernetes.io/docs/tasks/tools/install-kubectl/
+ 
 
 ### Create Pods
 - Create the Pod YAML descriptor
@@ -949,3 +1014,18 @@ app-car-lb   LoadBalancer   10.0.245.169   <pending>     7001:31343/TCP   2m10s
 app-car-lb   LoadBalancer   10.0.245.169   40.89.161.63   7001:31343/TCP   3m9s
 ```
 
+## Vault Integration (Storing Application Secrets)
+
+- Install Vault docker image
+
+```
+docker pull vault
+```
+
+- Run vault docker image
+
+```
+docker run --cap-add=IPC_LOCK -d --name=dev-vault vault
+```
+
+- 

@@ -2,6 +2,7 @@ package com.example.springbootexample.common;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 
@@ -10,7 +11,7 @@ public class Contract {
 
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	private int userId;
@@ -23,6 +24,11 @@ public class Contract {
 	
 	public Contract(int id, int userId, int carId) {
 		this.id = id;
+		this.userId = userId;
+		this.carId = carId;
+	}
+	
+	public Contract(int userId, int carId) {
 		this.userId = userId;
 		this.carId = carId;
 	}

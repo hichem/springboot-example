@@ -3,6 +3,8 @@ package com.example.springbootexample.carapp.web.controller;
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +25,8 @@ public class CarController {
 	@Autowired
 	private CarDao _carDao;
 	
+	
+	Logger logger = LoggerFactory.getLogger(CarController.class);
 	
 	@RequestMapping(value = "/cars/{id}", method=RequestMethod.GET)
 	public Car getCar(@PathVariable int id) {

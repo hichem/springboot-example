@@ -2,6 +2,7 @@ package com.example.springbootexample.common;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 
@@ -10,7 +11,7 @@ public class User {
 
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	private String firstname;
@@ -23,6 +24,11 @@ public class User {
 	
 	public User(int id, String firstname, String lastname) {
 		this.id = id;
+		this.firstname = new String(firstname);
+		this.lastname = new String(lastname);
+	}
+	
+	public User(String firstname, String lastname) {
 		this.firstname = new String(firstname);
 		this.lastname = new String(lastname);
 	}
