@@ -254,7 +254,7 @@ https://kubernetes.io/docs/tasks/tools/install-kubectl/
 ### Create Pods
 - Create the Pod YAML descriptor
 
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -334,7 +334,7 @@ kubectl delete pod/app-user
 
 - A service can be created for a labeled pod using the a YAML manifest (here service-user.yaml). We named the service app-user-lb because it is of type load balancer.
 
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -480,7 +480,7 @@ kubectl delete service/app-user deployment.apps/app-user
 
 - Create a deployment YAML file for user app. the YAML will contain the following command (set the replicas and any other parameter according to your needs)
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -540,7 +540,7 @@ replicaset.apps/app-user-585596c48f   1         1         1       34s
 
 - Provide environment variables to container in deployment manifest. Example, we provide Spring Boot configuration with required URL to insurance app
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -613,7 +613,7 @@ kubectl config view
 
 will return the following since we are using minikube
 
-```
+```yaml
 apiVersion: v1
 clusters:
 - cluster:
@@ -868,19 +868,19 @@ Refer to: https://docs.microsoft.com/fr-fr/azure/container-registry/container-re
 - Create the container registry using this command (we used the same resource group as before)
 
 ```
-az acr create --resource-group DemoKubernetes --name KamereonContainerRegistry --sku Basic
+az acr create --resource-group DemoKubernetes --name ACVContainerRegistry --sku Basic
 ```
 
 returns the following:
 
-```
+```json
 {
   "adminUserEnabled": false,
   "creationDate": "2019-05-13T14:05:40.005536+00:00",
-  "id": "/subscriptions/79947dfa-0d6a-45c4-b6dc-9fe738f59300/resourceGroups/DemoKubernetes/providers/Microsoft.ContainerRegistry/registries/KamereonContainerRegistry",
+  "id": "/subscriptions/79947dfa-0d6a-45c4-b6dc-9fe738f59300/resourceGroups/DemoKubernetes/providers/Microsoft.ContainerRegistry/registries/acvcontainerregistry",
   "location": "francecentral",
-  "loginServer": "kamereoncontainerregistry.azurecr.io",
-  "name": "KamereonContainerRegistry",
+  "loginServer": "acvcontainerregistry.azurecr.io",
+  "name": "ACVContainerRegistry",
   "provisioningState": "Succeeded",
   "resourceGroup": "DemoKubernetes",
   "sku": {
@@ -894,34 +894,34 @@ returns the following:
 }
 ```
 
-The full name of the created registry is "kamereoncontainerregistry.azurecr.io"
+The full name of the created registry is "acvcontainerregistry.azurecr.io"
 
 - Connect to the container registry
 
 ```
-az acr login --name KamereonContainerRegistry
+az acr login --name ACVContainerRegistry
 ```
 
 - In order to send our local images to Azure container registry, we must first tag them for azure registry hostname
 
 ```
-docker tag boussettahichem/myrepo:car0.1 kamereoncontainerregistry.azurecr.io/car:v0.1
-docker tag boussettahichem/myrepo:user0.1 kamereoncontainerregistry.azurecr.io/user:v0.1
-docker tag boussettahichem/myrepo:insurance0.1 kamereoncontainerregistry.azurecr.io/insurance:v0.1
+docker tag boussettahichem/myrepo:car0.1 acvcontainerregistry.azurecr.io/car:v0.1
+docker tag boussettahichem/myrepo:user0.1 acvcontainerregistry.azurecr.io/user:v0.1
+docker tag boussettahichem/myrepo:insurance0.1 acvcontainerregistry.azurecr.io/insurance:v0.1
 ```
 
 - Push the images to azure registry container
 
 ```
-docker push kamereoncontainerregistry.azurecr.io/car:v0.1
-docker push kamereoncontainerregistry.azurecr.io/user:v0.1
-docker push kamereoncontainerregistry.azurecr.io/insurance:v0.1
+docker push acvcontainerregistry.azurecr.io/car:v0.1
+docker push acvcontainerregistry.azurecr.io/user:v0.1
+docker push acvcontainerregistry.azurecr.io/insurance:v0.1
 ```
 
 - Display the images on azure registry container
 
 ```
-az acr repository list --name KamereonContainerRegistry --output table
+az acr repository list --name ACVContainerRegistry --output table
 ```
 
 returns
@@ -937,7 +937,7 @@ user
 - Display the tag of a given image
 
 ```
-az acr repository show-tags --name KamereonContainerRegistry --repository car --output table
+az acr repository show-tags --name ACVContainerRegistry --repository car --output table
 ```
 
 returns
@@ -951,10 +951,10 @@ v0.1
 - Delete image from azure container registry
 
 ```
-az acr repository delete --name KamereonContainerRegistry --image kamereoncontainerregistry.azurecr.io/car:v0.1
+az acr repository delete --name ACVContainerRegistry --image acvcontainerregistry.azurecr.io/car:v0.1
 ```
 
-- Authenticate with Azure Container Registry from AKS
+### Authenticate with Azure Container Registry from AKS
 
 Refer to the following link for more information:
 https://docs.microsoft.com/bs-latn-ba/azure/container-registry/container-registry-auth-aks
@@ -968,12 +968,12 @@ We will use option 2 that consists in using kubernetes secrets to store the cont
 - Create the secret containing the container registry credentials
 
 ```
-kubectl create secret docker-registry acr-auth --docker-server kamereoncontainerregistry.azurecr.io --docker-username cf6296f1-78c7-4995-a330-da845834cd61 --docker-password 1bf594f0-3999-4acb-9430-e830448055c0 --docker-email hichem.boussetta@alliance-rnm.com
+kubectl create secret docker-registry acr-auth --docker-server acvcontainerregistry.azurecr.io --docker-username cf6296f1-78c7-4995-a330-da845834cd61 --docker-password 1bf594f0-3999-4acb-9430-e830448055c0 --docker-email hichem.boussetta@alliance-rnm.com
 ```
 
 - Pod deployment specification files must be updated with the image pull secrets
 
-```
+```yaml
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
@@ -991,6 +991,51 @@ spec:
       - name: acr-auth
 ```
 
+### Get Azure Container Registry for use with Maven
+
+Refer to links:
+https://docs.microsoft.com/fr-fr/java/azure/spring-framework/deploy-spring-boot-java-app-using-fabric8-maven-plugin?view=azure-java-stable
+https://github.com/Azure/azure-docs-sdk-java/blob/master/docs-ref-conceptual/spring-framework/deploy-spring-boot-java-app-from-container-registry-using-maven-plugin.md
+
+- Enable admin mode on the repository
+
+```
+az acr update -n ACVContainerRegistry --admin-enabled true
+```
+
+- Get the password for accessing the registry
+
+```
+az acr credential show --name ACVContainerRegistry --query passwords[0]
+```
+
+returns 
+
+```json
+{
+  "name": "password",
+  "value": "PASSWORDQJGDQSDVB?QSBDJGYJZE"
+}
+```
+
+- Update maven **settings.xml*** file in ~/.m2/settings.xml with the following
+
+```
+<server>
+      <id>acvcontainerregistry.azurecr.io</id>
+      <username>ACVContainerRegistry</username>
+      <password>PASSWORDQJGDQSDVB</password>
+</server>
+```
+
+- In project's pom.xml, if using spotify dockerfile maven plugin, add the following settings
+
+```
+<serverId>${mycontainerregistry}</serverId>
+<registryUrl>https://${mycontainerregistry}</registryUrl>
+<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+```
+
 
 ### Create the Pods
 
@@ -1001,7 +1046,6 @@ kubectl -n development apply -f cluster-azure.yaml
 ```
 
 - Exposing the load-balanced services may take some time to complete (several minutes). You can monitor the progress use the following command
-
 ```
 kubectl -n development get service app-car-lb --watch
 ```
@@ -1028,4 +1072,171 @@ docker pull vault
 docker run --cap-add=IPC_LOCK -d --name=dev-vault vault
 ```
 
-- 
+- The following link gives instructions about configuring Kubernetes with Vault
+https://github.com/hashicorp/vault-guides/tree/master/identity/vault-agent-k8s-demo
+
+- Create Kubernetes service account
+
+```
+# Create a service account, 'vault-auth'
+kubectl create serviceaccount vault-auth
+
+# Update the 'vault-auth' service account
+kubectl apply -f vault-auth-service-account.yaml
+```
+
+- Run the setup-k8s-auth.sh script to set up the kubernetes auth method on your Vault server.
+
+```
+./setup-k8s-auth.sh
+```
+
+
+## Helm Installation
+
+- Download helm from official website
+- Run the command below to initialize helm CLI and install Tiller into the cluster (can be minikube or other)
+
+```
+helm init --history-max 200
+```
+
+- Update helm repo
+
+```
+helm repo update
+```
+
+- Install a stable chart
+
+```
+helm install stable/mysql
+```
+
+```
+NAME:   wintering-rodent
+LAST DEPLOYED: Thu Oct 18 14:21:18 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Secret
+NAME                    AGE
+wintering-rodent-mysql  0s
+
+==> v1/ConfigMap
+wintering-rodent-mysql-test  0s
+
+==> v1/PersistentVolumeClaim
+wintering-rodent-mysql  0s
+
+==> v1/Service
+wintering-rodent-mysql  0s
+
+==> v1beta1/Deployment
+wintering-rodent-mysql  0s
+
+==> v1/Pod(related)
+
+NAME                                    READY  STATUS   RESTARTS  AGE
+wintering-rodent-mysql-6986fd6fb-988x7  0/1    Pending  0         0s
+```
+
+- List installed charts
+
+```
+helm ls
+```
+
+- Uninstall a release by its name (name of mysql chart is wintering-rodent)
+
+```
+helm delete wintering-rodent
+```
+
+- We can still request information about the deleted app
+
+```
+helm status wintering-rodent
+```
+
+```
+LAST DEPLOYED: Thu Oct 18 14:21:18 2018
+NAMESPACE: default
+STATUS: DELETED
+```
+
+- Undelete a release
+
+```
+helm rollback
+```
+
+### Create New Chart
+
+- Create an app-user chart
+
+```
+helm create app-user
+```
+
+- In **values.yaml**, provide general parameters for pod and service like repository, image version, port, load balancer...
+
+- Verify chart (lint / static analysis) to make sure there are no errors
+
+```
+helm lint app-user
+```
+
+- Install the chart using the following command so it can be deployed
+
+```
+helm install --name user app-user/
+```
+
+- To update an existing deployment
+
+```
+helm upgrade user app-user/
+```
+
+- Package app-user chart (helm chart packaged in .tgz format)
+
+```
+helm package app-user
+```
+
+### Helm Repo
+
+A helm repo is just a server folder containing an **index.yaml** file having the following structure:
+
+```yaml
+apiVersion: v1
+entries:
+  app-user:
+  - apiVersion: v1
+    appVersion: "0.1"
+    created: "2019-05-20T17:09:23.250775+02:00"
+    description: Helm char for User Microservice
+    digest: bb113dd12f7190ff45d9b1b750f3ca0a763a6f3580ab6a74e0a217bea6d57c23
+    name: app-user
+    urls:
+    - https://hichem.github.io/springboot-example/app-user-0.3.0.tgz
+    version: 0.3.0
+generated: "2019-05-20T17:09:23.250161+02:00"
+```
+
+- Update the index when you generate a new helm chart package using the following command (the repository is hosted here on github pages. tgz packages are therefore placed in the *docs* folder)
+
+```
+helm repo index docs --url https://hichem.github.io/springboot-example/
+```
+
+- Commit and push the files to github
+
+- Install the chart now from remote (github) helm repository
+
+```
+helm install https://hichem.github.io/springboot-example/app-user --name user
+```
+

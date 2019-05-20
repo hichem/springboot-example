@@ -1,1 +1,13 @@
-
+apiVersion: v1
+entries:
+  app-user:
+  - apiVersion: v1
+    appVersion: "0.1"
+    created: "2019-05-20T17:09:23.250775+02:00"
+    description: Helm char for User Microservice
+    digest: bb113dd12f7190ff45d9b1b750f3ca0a763a6f3580ab6a74e0a217bea6d57c23
+    name: app-user
+    urls:
+    - https://hichem.github.io/springboot-example/app-user-0.3.0.tgz
+    version: 0.3.0
+generated: "2019-05-20T17:09:23.250161+02:00"
