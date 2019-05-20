@@ -1200,6 +1200,12 @@ helm install --name user app-user/
 helm upgrade user app-user/
 ```
 
+- To fully delete an installed chart
+
+```
+helm delete --purge app-user
+```
+
 - Package app-user chart (helm chart packaged in .tgz format)
 
 ```
@@ -1234,9 +1240,15 @@ helm repo index docs --url https://hichem.github.io/springboot-example/
 
 - Commit and push the files to github
 
+- Add the repo to helm (name it my-helm-repo)
+
+```
+helm repo add my-helm-repo https://hichem.github.io/springboot-example/
+```
+
 - Install the chart now from remote (github) helm repository
 
 ```
-helm install https://hichem.github.io/springboot-example/app-user --name user
+helm install my-helm-repo/app-user --name user
 ```
 
