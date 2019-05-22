@@ -42,14 +42,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Internal Dependencies -->
 		<dependency>
 			<groupId>com.example.springbootexample</groupId>
 			<artifactId>common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -70,6 +70,37 @@
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
+				</configuration>
+			</plugin>
+
+			<!-- Generate Helm Chart / Kiwigrid -->
+			<plugin>
+				<groupId>com.kiwigrid</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+				<version>4.3</version>
+
+				<configuration>
+					<chartDirectory>${project.basedir}/helm/${project.artifactId}</chartDirectory>
+					<chartVersion>${project.version}</chartVersion>
+					<appVersion>${project.version}</appVersion>
+					<!-- This is the related section when using binary download -->
+					<helmDownloadUrl></helmDownloadUrl>
+					<useLocalHelmBinary>true</useLocalHelmBinary>
+					<autoDetectLocalHelmBinary>true</autoDetectLocalHelmBinary>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+
+					<!-- Mandatory when you use a custom lifecycle -->
+					<extensions>true</extensions>
+					<executions>
+						<execution>
+							<id>default</id>
+							<goals>
+								<goal>lint</goal>
+								<goal>package</goal>
+							</goals>
+						</execution>
+					</executions>
+
 				</configuration>
 			</plugin>
 
