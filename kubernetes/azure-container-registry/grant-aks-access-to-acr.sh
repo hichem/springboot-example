@@ -2,8 +2,8 @@
 
 AKS_RESOURCE_GROUP=DemoKubernetes
 AKS_CLUSTER_NAME=kamereon-k8s
-ACR_RESOURCE_GROUP=DemoKubernetes
-ACR_NAME=KamereonContainerRegistry
+ACR_RESOURCE_GROUP=DemoContainerRegistryResourceGroup
+ACR_NAME=ACVContainerRegistry
 
 # Get the id of the service principal configured for AKS
 CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query "servicePrincipalProfile.clientId" --output tsv)

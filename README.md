@@ -582,7 +582,7 @@ A typical application would be to create development, staging, preproductiona an
 ### Create Namespace
 - Create a YAML namespace-dev.yaml manifest for the namespace. We will call the namespace "development" and give it the same label.
 
-```
+```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -905,17 +905,17 @@ az acr login --name ACVContainerRegistry
 - In order to send our local images to Azure container registry, we must first tag them for azure registry hostname
 
 ```
-docker tag boussettahichem/myrepo:car0.1 acvcontainerregistry.azurecr.io/car:v0.1
-docker tag boussettahichem/myrepo:user0.1 acvcontainerregistry.azurecr.io/user:v0.1
-docker tag boussettahichem/myrepo:insurance0.1 acvcontainerregistry.azurecr.io/insurance:v0.1
+docker tag boussettahichem/myrepo:car0.1 acvcontainerregistry.azurecr.io/car:0.1
+docker tag boussettahichem/myrepo:user0.1 acvcontainerregistry.azurecr.io/user:0.1
+docker tag boussettahichem/myrepo:insurance0.1 acvcontainerregistry.azurecr.io/insurance:0.1
 ```
 
 - Push the images to azure registry container
 
 ```
-docker push acvcontainerregistry.azurecr.io/car:v0.1
-docker push acvcontainerregistry.azurecr.io/user:v0.1
-docker push acvcontainerregistry.azurecr.io/insurance:v0.1
+docker push acvcontainerregistry.azurecr.io/car:0.1
+docker push acvcontainerregistry.azurecr.io/user:0.1
+docker push acvcontainerregistry.azurecr.io/insurance:0.1
 ```
 
 - Display the images on azure registry container
@@ -1020,7 +1020,7 @@ returns
 
 - Update maven **settings.xml*** file in ~/.m2/settings.xml with the following
 
-```
+```xml
 <server>
       <id>acvcontainerregistry.azurecr.io</id>
       <username>ACVContainerRegistry</username>
@@ -1030,7 +1030,7 @@ returns
 
 - In project's pom.xml, if using spotify dockerfile maven plugin, add the following settings
 
-```
+```xml
 <serverId>${mycontainerregistry}</serverId>
 <registryUrl>https://${mycontainerregistry}</registryUrl>
 <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
@@ -1091,8 +1091,9 @@ kubectl apply -f vault-auth-service-account.yaml
 ./setup-k8s-auth.sh
 ```
 
-
 ## Helm Installation
+
+Helm is the configuration management tool for Kubernetes applications.
 
 - Download helm from official website
 - Run the command below to initialize helm CLI and install Tiller into the cluster (can be minikube or other)
@@ -1252,3 +1253,106 @@ helm repo add my-helm-repo https://hichem.github.io/springboot-example/
 helm install my-helm-repo/app-user --name user
 ```
 
+### Using Azure Helm Repo from Azure CLI
+
+The documentation on how to use azure container repository as a Helm repo is available at this link:
+https://docs.microsoft.com/fr-fr/azure/container-registry/container-registry-helm-repos
+
+- Connect to azure console
+
+```
+az login
+```
+
+- Configure the azure CLI with the container registry
+
+```
+az configure --defaults acr=ACVContainerRegistry
+```
+
+- Add Azure container registry helm repo to the local helm client
+
+```
+az acr helm repo add
+```
+
+- Push chart to Azure container registry
+
+```
+az acr helm push app-user-1.7.tgz
+```
+
+- List the charts in the repository
+
+```
+az acr helm list
+```
+```json
+{
+"user-api": [
+{
+"acrMetadata": {
+"manifestDigest": "sha256:0c379180ba6a80987309854f8ceedb4292b71d108bf574de6cc76754753c5511"
+},
+"apiVersion": "v1",
+"appVersion": "1.7",
+"created": "2019-05-21T10:50:18.3175964Z",
+"description": "Helm char for User Microservice",
+"digest": "5fe930176ee618be5100f382174a5373b28edf41718faf7376acbae52bca0dc3",
+"name": "user-api",
+"urls": [
+"_blobs/user-api-1.7.tgz"
+],
+"version": "1.7"
+}
+]
+}
+```
+
+### Use Helm/Tiller on AKS to Deploy Applications
+
+Doc: https://docs.microsoft.com/fr-fr/azure/aks/kubernetes-helm
+
+* Create a service account to grant Tiller admin role on the cluster
+* On the deployment pipeline (release pipeline), initialize Helm / Tiller. Add the following tasks:
+    * Helm Install (install Helm and Tiller)
+    * Helm Init (initialize helm/tiller on the kubernetes cluster)
+        * Create and use Azure Resource Manager connection as described in the following link:
+        https://docs.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops
+        * Initialize Tiller with argument *--service-account tiller* (additional tls security can be applied at this stage)
+        * Set Tiller namespace to *kube-system* in advanced settings
+    * Helm Upgrade (deploy the application based on the last helm chart)
+        * Provide the chart path or name to be used (could be the char file .tgz built and copied to artifact staging drop directory)
+
+### Create Release Pipeline in Azure DevOps
+
+This topic is covered in this page: https://docs.microsoft.com/en-us/azure/devops/pipelines/apps/cd/deploy-aks?view=azure-devops
+
+### Scaling AKS Cluster
+
+Doc: https://docs.microsoft.com/fr-fr/azure/aks/scale-cluster
+
+* Scale the node pool
+
+```
+az aks scale --resource-group DemoKubernetes --name kamereon-k8s --node-count 2
+```
+
+* Get the name of the attributes of the node pool
+
+```
+az aks show --resource-group DemoKubernetes --name kamereon-k8s --query agentPoolProfiles
+```
+```json
+[
+{
+"count": 2,
+"maxPods": 110,
+"name": "nodepool1",
+"osDiskSizeGb": 100,
+"osType": "Linux",
+"storageProfile": "ManagedDisks",
+"vmSize": "Standard_DS2_v2"
+}
+]
+```
