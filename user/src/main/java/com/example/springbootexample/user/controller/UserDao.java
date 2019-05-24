@@ -1,4 +1,4 @@
-package com.example.springbootexample.user.web.controller;
+package com.example.springbootexample.user.controller;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

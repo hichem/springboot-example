@@ -1,10 +1,8 @@
-package com.example.springbootexample.carapp.web.controller;
+package com.example.springbootexample.insurance.controller;
 
 import java.net.URI;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,43 +14,43 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.springbootexample.common.Car;
+import com.example.springbootexample.common.Contract;
+import com.example.springbootexample.insurance.repository.ContractDao;
 
 
 @RestController
-public class CarController {
+public class ContractController {
 
 	@Autowired
-	private CarDao _carDao;
+	private ContractDao _contractDao;
 	
 	
-	Logger logger = LoggerFactory.getLogger(CarController.class);
 	
-	@RequestMapping(value = "/cars/{id}", method=RequestMethod.GET)
-	public Car getCar(@PathVariable int id) {
+	@RequestMapping(value = "/contracts/{id}", method=RequestMethod.GET)
+	public Contract getContract(@PathVariable int id) {
 		
-		//Fetch car with id
-		Car aCar = _carDao.findById(id);
+		//Fetch contract with id
+		Contract aContract = _contractDao.findById(id);
 		
-		return aCar;
+		return aContract;
 	}
 	
 	
-	@RequestMapping(value = "/cars", method=RequestMethod.GET)
-	public List<Car> getCars() {
+	@RequestMapping(value = "/contracts", method=RequestMethod.GET)
+	public List<Contract> getContract() {
 		
-		return _carDao.findAll();
+		return _contractDao.findAll();
 	}
 	
 	
-	@PostMapping(value = "/cars")
-	public ResponseEntity<Void> addCar(@RequestBody Car car) {
+	@PostMapping(value = "/contracts")
+	public ResponseEntity<Void> addContract(@RequestBody Contract contract) {
 		
-		//Add a car
-		Car newCar = _carDao.save(car);
+		//Add a contract
+		Contract newContract = _contractDao.save(contract);
 		
 		//In case of failure
-		if(newCar == null) {
+		if(newContract == null) {
 			return ResponseEntity.noContent().build();
 		}
 		
@@ -60,7 +58,7 @@ public class CarController {
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
 				.path("/{id}")
-				.buildAndExpand(newCar.getId())
+				.buildAndExpand(newContract.getId())
 				.toUri();
 		
 		//Return the new resource
@@ -68,8 +66,11 @@ public class CarController {
 	}
 	
 	
-	@DeleteMapping (value = "/cars/{id}")
-	public void deleteCar(@PathVariable int id) {
-		_carDao.deleteById(id);
+	@DeleteMapping (value = "/contracts/{id}")
+	public void deleteUser(@PathVariable int id) {
+		_contractDao.deleteById(id);
 	}
+	
+	
+	
 }

@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.example.springbootexample.common.User;
-import com.example.springbootexample.user.web.controller.UserDao;
+import com.example.springbootexample.user.controller.UserDao;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

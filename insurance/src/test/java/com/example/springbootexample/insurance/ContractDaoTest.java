@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.example.springbootexample.common.Contract;
-import com.example.springbootexample.insurance.model.ContractDao;
+import com.example.springbootexample.insurance.repository.ContractDao;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

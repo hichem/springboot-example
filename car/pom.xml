@@ -43,6 +43,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- AMQP / RabbitMQ Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
 		<!-- Internal Dependencies -->
 		<dependency>
 			<groupId>com.example.springbootexample</groupId>
