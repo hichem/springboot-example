@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-insurance
+  labels:
+    app: app-insurance
+spec:
+  containers:
+    - image: acvcontainerregistry.azurecr.io/insurance:1.8
+      name: app-insurance
+      ports:
+        - containerPort: 7002
+

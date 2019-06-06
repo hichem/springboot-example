@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-car
+  labels:
+    app: app-car
+spec:
+  containers:
+    - image: acvcontainerregistry.azurecr.io/car:2.0
+      name: app-car
+      ports:
+        - containerPort: 7001
+

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: insurance
+data:
+  application.properties: |
+    # Server port
+    server.port 80
+
+    # Configurations Postgres
+    spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+    spring.datasource.driver-class-name = org.postgresql.Driver
+    spring.datasource.url = jdbc:postgresql://postgres/${POSTGRES_DB}
+    spring.datasource.username=${POSTGRES_USER}
+    spring.datasource.password=${POSTGRES_PASSWORD}
+    spring.datasource.initialize=true
+
+    #RABBITMQ
+    spring.rabbitmq.host = rabbitmq
+    spring.rabbitmq.port = 5672
+    spring.rabbitmq.username = ${RABBITMQ_USERNAME}
+    spring.rabbitmq.password = ${RABBITMQ_PASSWORD}
+
+    #RIBBON Service Discovery
+    ribbon.http.client.enabled=true
+    spring.cloud.kubernetes.ribbon.enabled=true
+    car.ServerListRefreshInterval=15000
+    user.ServerListRefreshInterval=15000

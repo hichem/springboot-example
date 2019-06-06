@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: car
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: car
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car
+spec:
+  selector:
+    matchLabels:
+      app: car
+  replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: car
+    spec:
+      containers:
+        - image: acvcontainerregistry.azurecr.io/car:3.2
+          imagePullPolicy: Always							# Set to Always to force pulling the image at each deployment
+          name: car
+          env:
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: password
+            - name: POSTGRES_DB
+              value: kamereon
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: password
+          ports:
+            - containerPort: 80
+          # volumeMounts:
+          # - name: car-config 
+          #   mountPath: "/deployments/config" 
+          #   readOnly: true
+      imagePullSecrets:
+            - name: secret-acr
+      # volumes:
+      # - name: car-config
+      #   configMap:
+      #     name: car 
+      #     items:
+      #     - key: application.properties 
+      #       path: application.properties
+

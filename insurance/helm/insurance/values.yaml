@@ -6,7 +6,7 @@ replicaCount: 2
 
 image:
   repository: acvcontainerregistry.azurecr.io/insurance
-  tag: 2.0
+  tag: 3.1
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -15,7 +15,7 @@ fullnameOverride: ""
 
 service:
   type: LoadBalancer
-  port: 7002
+  port: 80
 
 ingress:
   enabled: false
@@ -48,3 +48,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+rbac:
+  create: true
+
