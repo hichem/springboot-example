@@ -1036,6 +1036,13 @@ returns
 <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
 ```
 
+### Use Azure Container Registry with Minikube
+- Retrieve the credentials of the registry
+- Create a credentials secret in the minikube cluster
+
+```
+kubectl create secret docker-registry secret-acr --docker-server=acvcontainerregistry.azurecr.io --docker-username=ACVContainerRegistry --docker-password=**** --docker-email=hichem.boussetta@alliance-rnm.com
+```
 
 ### Create the Pods
 
@@ -1099,7 +1106,7 @@ Helm is the configuration management tool for Kubernetes applications.
 - Run the command below to initialize helm CLI and install Tiller into the cluster (can be minikube or other)
 
 ```
-helm init --history-max 200
+helm init --service-account tiller  --history-max 200
 ```
 
 - Update helm repo
@@ -1309,6 +1316,18 @@ az acr helm list
 }
 ```
 
+- Install helm chart from repository
+
+```
+az acr helm install acvcontainerregistry.azurecr.io/àpp-user:1.7
+```
+
+- Install a helm chart to a namespace
+
+```
+helm install --name car target/app-user-1.7.0.tgz --namespace development
+```
+
 ### Use Helm/Tiller on AKS to Deploy Applications
 
 Doc: https://docs.microsoft.com/fr-fr/azure/aks/kubernetes-helm
@@ -1355,4 +1374,120 @@ az aks show --resource-group DemoKubernetes --name kamereon-k8s --query agentPoo
 "vmSize": "Standard_DS2_v2"
 }
 ]
+```
+
+### Scaling Deployment - Replica
+* Use the following command
+```
+kubectl scale -n development deployment car-deployment-dev --replicas=2
+```
+* To force restart a pod, we can for example decrease the replica count to 0 then to 2
+
+## Azure Service Broker API
+
+Doc:
+https://github.com/Azure/open-service-broker-azure/blob/master/docs/quickstart-aks.md
+
+### Installation
+- Create Service Principal for Open Service Broker for Azure (OSBA)
+
+```
+az ad sp create-for-rbac --name osba-kamereon -o table
+
+AppId                                 DisplayName    Name                  Password                              Tenant
+------------------------------------  -------------  --------------------  ------------------------------------  ------------------------------------
+d23809fb-85ea-4601-a646-c3713177c63a  osba-kamereon  http://osba-kamereon  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  7bfa8236-cdfb-45d1-98fe-ee4ce511f142
+```
+
+- Export the service principal variables to be used later
+
+```
+export AZURE_TENANT_ID=<Tenant>
+export AZURE_CLIENT_ID=<AppId>
+export AZURE_CLIENT_SECRET=<Password>
+```
+
+- Get Azure subscription ID
+
+```
+az account list -o table
+
+Name                           CloudName    SubscriptionId                        State    IsDefault
+-----------------------------  -----------  ------------------------------------  -------  -----------
+ACV_Architecture_Subscription  AzureCloud   79947dfa-0d6a-45c4-b6dc-9fe738f59300  Enabled  True
+```
+
+- Export subscription ID as env variable
+
+```
+export AZURE_SUBSCRIPTION_ID=79947dfa-0d6a-45c4-b6dc-9fe738f59300
+```
+
+- (Optional) Helm installation if not already done
+
+```
+kubectl create -f https://raw.githubusercontent.com/Azure/helm-charts/master/docs/prerequisities/helm-rbac-config.yaml
+helm init --service-account tiller
+```
+
+- Deploy Service Catalog on the Cluster
+
+```
+helm repo add svc-cat https://svc-catalog-charts.storage.googleapis.com
+helm install svc-cat/catalog --name catalog --namespace catalog \
+--set apiserver.storage.etcd.persistence.enabled=true \
+--set apiserver.healthcheck.enabled=false \
+--set controllerManager.healthcheck.enabled=false \
+--set apiserver.verbosity=2 \
+--set controllerManager.verbosity=2
+```
+
+- Wait for the service catalog to get ready
+
+```
+kubectl get pods --namespace=catalog --watch
+```
+
+- Deploy the Open Service Broker on the cluster
+
+```
+helm repo add azure https://kubernetescharts.blob.core.windows.net/azure
+helm install azure/open-service-broker-azure --name osba --namespace osba \
+--set azure.subscriptionId=$AZURE_SUBSCRIPTION_ID \
+--set azure.tenantId=$AZURE_TENANT_ID \
+--set azure.clientId=$AZURE_CLIENT_ID \
+--set azure.clientSecret=$AZURE_CLIENT_SECRET
+```
+
+### Create Azure Postgres DB
+Doc:
+https://docs.microsoft.com/fr-fr/azure/postgresql/quickstart-create-server-up-azure-cli
+
+- Install db-up extension in azure CLI
+
+```
+az extension add --name db-up
+```
+
+- Create the postgres database (we create it in the same resource group as aks for test purpose)
+
+```
+az postgres up -g DemoKubernetes --database-name kamereon --admin-user kamereon --admin-password kamere0n*
+
+{
+"connectionStrings": {
+"ado.net": "Server=server904188840.postgres.database.azure.com;Database=kamereon;Port=5432;User Id=kamereon@server904188840;Password=kamere0n*;",
+"jdbc": "jdbc:postgresql://server904188840.postgres.database.azure.com:5432/kamereon?user=kamereon@server904188840&password=kamere0n*",
+"jdbc Spring": "spring.datasource.url=jdbc:postgresql://server904188840.postgres.database.azure.com:5432/kamereon  spring.datasource.username=kamereon@server904188840  spring.datasource.password=kamere0n*",
+"node.js": "var client = new pg.Client('postgres://kamereon@server904188840:kamere0n*@server904188840.postgres.database.azure.com:5432/kamereon');",
+"php": "host=server904188840.postgres.database.azure.com port=5432 dbname=kamereon user=kamereon@server904188840 password=kamere0n*",
+"psql_cmd": "psql --host=server904188840.postgres.database.azure.com --port=5432 --username=kamereon@server904188840 --dbname=kamereon",
+"python": "cnx = psycopg2.connect(database='kamereon', user='kamereon@server904188840', host='server904188840.postgres.database.azure.com', password='kamere0n*', port='5432')",
+"ruby": "cnx = PG::Connection.new(:host => 'server904188840.postgres.database.azure.com', :user => 'kamereon@server904188840', :dbname => 'kamereon', :port => '5432', :password => 'kamere0n*')",
+"webapp": "Database=kamereon; Data Source=server904188840.postgres.database.azure.com; User Id=kamereon@server904188840; Password=kamere0n*"
+},
+"host": "server904188840.postgres.database.azure.com",
+"password": "kamere0n*",
+"username": "kamereon@server904188840"
+}
 ```
