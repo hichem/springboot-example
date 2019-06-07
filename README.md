@@ -731,6 +731,47 @@ spec:
           servicePort: 80
 ```
 
+Create the secret and the ingress, then  check the ingress properties using **kubectl describe** command
+
+```
+kubectl describe ingress my-ingress-fanout
+
+Name:             my-ingress-fanout
+Namespace:        default
+Address:          
+Default backend:  default-http-backend:80 (<none>)
+TLS:
+  main-domain-tls terminates example.com
+Rules:
+  Host         Path  Backends
+  ----         ----  --------
+  example.com  
+               /car/(.*)         car:80 (<none>)
+               /user/(.*)        user:80 (<none>)
+               /insurance/(.*)   insurance:80 (<none>)
+```
+
+```
+Name:             my-ingress-virtual-hosts
+Namespace:        default
+Address:          
+Default backend:  default-http-backend:80 (<none>)
+TLS:
+  main-domain-tls terminates example.com
+  car-domain-tls terminates car.example.com
+  user-domain-tls terminates user.example.com
+  insurance-domain-tls terminates insurance.example.com
+Rules:
+  Host                   Path  Backends
+  ----                   ----  --------
+  car.example.com        
+                            car:80 (<none>)
+  user.example.com       
+                            user:80 (<none>)
+  insurance.example.com  
+                            insurance:80 (<none>)
+```
+
 #### Test Ingress
 
 * Test Fanout Routing
@@ -751,7 +792,7 @@ curl -H 'Host: insurance.example.com' http://40.89.129.131/contracts
 
 * Test TLS Configuration
 
-If testing locally, create /etc/hosts dns entry.
+Create /etc/hosts dns entry if no domain name is available for testing.
 Use the browser or any other tools to check https call is working
 
 ## Manage Kubernetes Namespaces
