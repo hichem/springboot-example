@@ -179,7 +179,7 @@ docker network ls
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' CONTAINER_ID
 ```
 
-## Kubernetes
+## Operate Kubernetes
 
 This section covers the following:
 - Install Kubernetes cluster locally (minikube)
@@ -251,7 +251,7 @@ Download & Install kubectl following this link
 https://kubernetes.io/docs/tasks/tools/install-kubectl/
  
 
-### Create Pods
+### Create / Delete Pods
 - Create the Pod YAML descriptor
 
 ```yaml
@@ -330,7 +330,7 @@ Delete the pod pod/app-user
 kubectl delete pod/app-user
 ```
 
-### Create Service
+### Create / Delete Service
 
 - A service can be created for a labeled pod using the a YAML manifest (here service-user.yaml). We named the service app-user-lb because it is of type load balancer.
 
@@ -574,6 +574,185 @@ spec:
 ```
 
 - Each service with the cluster can be resolved by its name as kube-dns creates a dns entry for each created service. Containers can communicate with a service using its dns entry.
+
+### Create Ingress
+* An ingress controller is mandatory to create ingress routes to services hosted inside kubernetes cluster
+* Many ingress controllers providers are supported by kubernetes. Here is an exhaustive list:
+https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/
+* We will be using next nginx ingress controller
+
+#### Install Nginx Ingress Controller
+Install Nginx controller using its official helm chart.
+Doc: https://kubernetes.github.io/ingress-nginx/deploy/#azure
+
+* Install Nginx Controller helm chart
+
+```
+helm install stable/nginx-ingress --name my-nginx
+```
+
+* (Optional) If the kubernetes cluster has RBAC enabled, then run:
+
+```
+helm install stable/nginx-ingress --name my-nginx --set rbac.create=true
+```
+
+#### Create Ingress Configuration
+
+Google Doc:
+https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-multi-ssl
+
+* Ingress Fanout Configuration (URL-based routing) Example
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress-fanout
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /car/(.*)
+        backend:
+          serviceName: car
+          servicePort: 80
+      - path: /user/(.*)
+        backend:
+          serviceName: user
+          servicePort: 80
+      - path: /insurance/(.*)
+        backend:
+          serviceName: insurance
+          servicePort: 80
+
+```
+
+* Ingress Name-based Virtual Hosting Example
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress-virtual-hosts
+spec:
+  rules:
+  - host: car.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: car
+          servicePort: 80
+  - host: user.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: user
+          servicePort: 80
+  - host: insurance.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: insurance
+          servicePort: 80
+
+
+```
+
+* Ingress TLS Configuration
+This ingress requires creating:
+** Ingress with TLS definition
+** Secret with TLS certificate
+
+Generate the key and certificate using openssl
+
+```
+openssl req -x509 -newkey rsa:4096 -keyout car-key.pem -out car-cert.pem -days 365 -nodes -subj '/CN=car.example.com'
+openssl req -x509 -newkey rsa:4096 -keyout user-key.pem -out user-cert.pem -days 365 -nodes -subj '/CN=user.example.com'
+openssl req -x509 -newkey rsa:4096 -keyout insurance-key.pem -out insurance-cert.pem -days 365 -nodes -subj '/CN=insurance.example.com'
+```
+
+Create secret files with tls key and cert (key and certificate must be BASE64 encoded). Example:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: car-domain-tls
+  namespace: default
+data:
+  tls.crt: LS0tLS1CRUdJTiBDR....
+  tls.key: LS0tLS1CRUdJ...
+type: kubernetes.io/tls
+```
+
+Update ingress definition with tls configuration (host to tls certificates mapping)
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress-virtual-hosts
+spec:
+  tls:
+  - hosts:
+    - example.com
+    secretName: main-domain-tls
+  - hosts:
+    - car.example.com
+    secretName: car-domain-tls
+  - hosts:
+    - user.example.com
+    secretName: user-domain-tls
+  - hosts:  
+    - insurance.example.com
+    secretName: insurance-domain-tls
+  rules:
+  - host: car.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: car
+          servicePort: 80
+  - host: user.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: user
+          servicePort: 80
+  - host: insurance.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: insurance
+          servicePort: 80
+```
+
+#### Test Ingress
+
+* Test Fanout Routing
+
+```
+curl -H 'Host: example.com' http://40.89.129.131/car/cars
+curl -H 'Host: example.com' http://40.89.129.131/user/users
+curl -H 'Host: example.com' http://40.89.129.131/inurance/contracts
+```
+
+* Test Name-based Virtual Hosting
+
+```
+curl -H 'Host: car.example.com' http://40.89.129.131/cars
+curl -H 'Host: user.example.com' http://40.89.129.131/users
+curl -H 'Host: insurance.example.com' http://40.89.129.131/contracts
+```
+
+* Test TLS Configuration
+
+If testing locally, create /etc/hosts dns entry.
+Use the browser or any other tools to check https call is working
 
 ## Manage Kubernetes Namespaces
 Kubernetes namespace are useful to create separate virtual environments/clusters on kubernetes physical cluster.
@@ -1382,6 +1561,8 @@ az aks show --resource-group DemoKubernetes --name kamereon-k8s --query agentPoo
 kubectl scale -n development deployment car-deployment-dev --replicas=2
 ```
 * To force restart a pod, we can for example decrease the replica count to 0 then to 2
+
+
 
 ## Azure Service Broker API
 
